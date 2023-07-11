@@ -49,34 +49,41 @@ count = 0
 
 def main():
 	while count == 0:
-			try:
-				routefile = input("Type in route file. Eg 'Route001.txt': ") #Get route file and save as str in routefile
-				fullroute = []
-				if routefile.lower() == "stop":
-					print("Program told to stop")
-					break
-       	else:
-        	with open (routefile,"r") as f:
-        		for line in f:
-							fullroute.append(line.strip())
+		try:
+			routefile = input("Type in route file. Eg 'Route001.txt': ") #Get route file and save as str in routefile
+			grid_max = 12
+			grid_min = 0
+   			fullroute = []
+			if routefile.lower() == "stop":
+				print("Program told to stop")
+				break
+       			else:
+        			with open (routefile,"r") as f:
+        				for line in f:
+						fullroute.append(line.strip())
                     
-            # identify startpoint coordinates and save as lst in startpoint
-			startpoint = [int(i) for i in fullroute[0:2]]
+         
+		
+  
+  	# check all points are within bounds.
+   			for i in fullroute:
+   				if i > grid_min <= grid_max:
+       					pass
+	    			else:
+					print("ERROR: Path out of bounds.")
+					break
+     
+     	# identify startpoint coordinates and save as lst in startpoint
+		startpoint = [int(i) for i in fullroute[0:2]]
+					
+	   
 
             # create list of vertices and set startpoint as first element, save as route
       route = []
       route.append(tuple(startpoint))  
 
-			grid_max = 12
-			grid_min = 0
-
-			for point in fullroute[2:]:
-				if point[0] > grid_min <= grid_max and point[1] > grid_min <= grid_max: 
-					pass
-				else:
-					print("ERROR: Point out of bounds.")
-					break
-					
+   		for point in fullroute[2:]:
+								
 				if point == "S":
 					south()
 				elif point == "N":
