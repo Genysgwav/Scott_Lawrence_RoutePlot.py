@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from matplotlib.path import Path as Path
 import matplotlib.patches as patches
 import matplotlib.table as table
-
+count = 0
 
 def south(): # decrease most recent y coordinate by 1
     last = route[-1:]
-    for i in last:
+    for i in last:	
         new = i[0], i[1] -1 
         route.append(new)
 
@@ -16,19 +16,19 @@ def north(): # increase most recent y coordinate by 1
     for i in last:
         new = i[0], i[1] +1 
         route.append(new)
-   
+
 def east(): # increase most recent x coordinate by 1
     last = route[-1:]
     for i in last:
         new = i[0]+1, i[1] 
         route.append(new)
-    
+
 def west(): # decrease most recent x coordinate by 1 
     last = route[-1:]
     for i in last:
         new = i[0]-1, i[1] 
         route.append(new)
-
+        
 def output(): # Display grid
     path = Path(verts, codes)
     fig, ax = plt.subplots()
@@ -38,34 +38,44 @@ def output(): # Display grid
     ax.set_ylim(0, 13)
     ax.grid(True)
     plt.show()
-    
-    
+
 def coord_display(): # Display Coordinates
-    print("Coordinates")
+    print("Coordinates: ")
     for i in route:
         print(i)
 
-count = 0
+def main():
+    global route, codes, verts, grid_min, grid_max, count
+    
+    while True:
+        try:
+            routefile = input("Type in route file. Eg 'Route001.txt': ") #Get route file and save as str in routefile
+            grid_max = 12
+            grid_min = 0
+            fullroute = []
+            if routefile.lower() == "stop":
+                print("Program told to stop")
+                break
+            else:
+                with open (routefile,"r") as f:
+                    for line in f:
+                        fullroute.append(line.strip())
+        
+            
+    # check starting points are within bounds.
+            if int(fullroute[0]) > int(grid_min) < int(grid_max) and int(fullroute[1]) > int(grid_min) <= int(grid_max):
+                pass
+            else:
+                print("ERROR: Startpoint out of bounds.")
+                continue
 
-while count == 0:
-    try:
-        routefile = input("Type in route file. Eg 'Route001.txt': ") #Get route file and save as str in routefile
-        fullroute = []
-        if routefile == "stop":
-            print("Program told to stop")
-            break
-        else:
-            with open (routefile,"r") as f:
-                for line in f:
-                    fullroute.append(line.strip())
-                    
-            # identify startpoint coordinates and save as lst in startpoint
+    # identify startpoint coordinates and save as lst in startpoint
             startpoint = [int(i) for i in fullroute[0:2]]
-
-            # create list of vertices and set startpoint as first element, save as route
-            route = []
-            route.append(tuple(startpoint))  
-
+       
+    # create list of vertices and set startpoint as first element, save as route
+            
+            route = [tuple(startpoint)]
+            
             for point in fullroute[2:]:
                 if point == "S":
                     south()
@@ -75,30 +85,40 @@ while count == 0:
                     east()
                 else:
                     west()   
-                    
-            # Check route is within bound and save as list in verts
+                
+    # Save as list in verts
+                
             verts = []
-
             for i in route:
-                if i[0] > 0 <= 12 and i[1] >0 <= 12: 
-                    verts.append(i)
-                else:
+                if  int(grid_min) > int(i[0]) < int(grid_max) or  int(grid_min) > int(i[1]) < int(grid_max):
+                    print("ERROR: path out of bounds.")
                     break
-            # create appropriate number of codes based on point identified in route. Save as codes    
-            codes = [
-                Path.MOVETO,
-            ]
-
+                else:
+                    verts.append(i)
+                            
+            if len(verts) == len(route):
+                pass
+            else:
+                continue
+                
+           
+                                                  
+                
+                    
+        # create appropriate number of codes based on point identified in route. Save as codes    
+            codes = [Path.MOVETO,]
             for i in fullroute[2:]:
                 codes.append(Path.LINETO,)
-
-            # Check route is within bounds and publish or return out of bounds
-            if len(verts) == len(fullroute)-1:
-                coord_display()
-                output()
-            else:
-                print("Error. Out of bounds")
+                
+        # Publish route
+            coord_display()
+            output()
         
-    except:
-        print("File not found, please re-enter or type stop")
-        continue
+        except FileNotFoundError:
+            print("File not found, please re-enter or type 'stop'")
+            continue
+    
+    
+
+if __name__ == "__main__":
+    main()
